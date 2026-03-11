@@ -1,5 +1,5 @@
-const express = require('express');     // Ligne 1
-const app = express();                  // Ligne 2
+const express = require('express');
+const app = express();
 const pool = require('./database');
 
 
@@ -17,13 +17,10 @@ let patients = [
 ];
 
 
-app.get('/health', (req, res) => {      // Ligne 3
-    res.json({ status: 'ok' });         // Ligne 4
-});                                     // Ligne 5
-
-app.listen(3000, () => {                // Ligne 6
-    console.log('Serveur lancé');
+app.get('/health', (req, res) => {
+    res.json({ status: 'ok' });
 });
+
 
 
 app.get('/bonjour', (req, res) => {
@@ -40,11 +37,11 @@ app.get('/patients', async (req, res) => {
 app.get('/patients/:id', async (req, res) => {
     let leId = parseInt(req.params.id);
     const searchId = await pool.query('select * from patient where id = $1', [leId]);
-    if (!searchId) {
+    if (searchId.rows.length === 0) {
         res.status(404).json({ error: 'Patient non trouvé' });
     }
     else {
-        res.json(searchId);
+        res.json(searchId.rows[0]);
     }
 });
 
@@ -89,3 +86,6 @@ app.put('/patients/:id', (req, res) => {
 });
 
 
+app.listen(3000, () => {
+    console.log('Serveur lancé');
+});
